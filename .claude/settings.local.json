@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "PowerShell(Get-NetTCPConnection -LocalPort 4173 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -Confirm:$false }; $env:BASE_PATH='/STEM-EDUCATION-GAMEX/'; npm run build | Select-Object -Last 4; if \\($LASTEXITCODE -ne 0\\) { \"BUILD FAILED\"; exit 1 }; New-Item -ItemType File -Force dist\\\\.nojekyll | Out-Null; git status --short; git add -A; git commit -q -m \"Fix Thai read-aloud: call Google TTS without referrer, never fall back to a non-Thai voice\"; $env:GIT_INDEX_FILE = Join-Path \\(Resolve-Path .git\\) 'pages-index'; git --work-tree=dist add -A -f; $tree = git write-tree; $c = git commit-tree $tree -p gh-pages -m \"Deploy site\"; Remove-Item $env:GIT_INDEX_FILE; Remove-Item Env:GIT_INDEX_FILE; git branch -f gh-pages $c; git log --oneline -2 main; git push origin main gh-pages; \"push exit=$LASTEXITCODE\")"
-    ]
-  }
-}
