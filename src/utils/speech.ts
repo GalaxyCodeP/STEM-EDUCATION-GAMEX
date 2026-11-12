@@ -171,7 +171,13 @@ class SpeechService {
               sub = sub ? sub + ' ' + w : w;
             } else {
               if (sub.trim()) chunks.push(sub.trim());
-              sub = w;
+              // ข้อความไทยที่ไม่มีเว้นวรรคเลยและยาวเกินกำหนด ต้องตัดตามความยาว ไม่เช่นนั้น TTS จะปฏิเสธทั้งท่อน
+              let rest = w;
+              while (rest.length > maxLen) {
+                chunks.push(rest.slice(0, maxLen));
+                rest = rest.slice(maxLen);
+              }
+              sub = rest;
             }
           }
           current = sub;
@@ -228,7 +234,17 @@ class SpeechService {
     const chunks = this.splitIntoChunks(cleanText);
     this.currentQueue = [...chunks];
 
-    const playNextChunk = (useProxy: boolean = true) => {
+    // Proxy /api/tts มีเฉพาะใน Vite dev server เท่านั้น บนเว็บที่ deploy แล้วให้เรียก Google โดยตรง
+    const proxyAvailable = Boolean((import.meta as any).env?.DEV);
+
+    // เมื่อ Cloud Audio ใช้ไม่ได้ ให้ Web Speech อ่านต่อเฉพาะส่วนที่ยังไม่ได้อ่าน (ไม่เริ่มใหม่ตั้งแต่ต้น)
+    const fallbackFrom = (failedText: string) => {
+      const remaining = [failedText, ...this.currentQueue];
+      this.currentQueue = [];
+      this.fallbackSpeakChunks(remaining, currentToken, callbacks, options);
+    };
+
+    const playNextChunk = (useProxy: boolean = proxyAvailable) => {
       // ตรวจสอบว่าถูกสั่งหยุดหรือเริ่มเล่นเสียงอื่นไปแล้วหรือไม่
       if (currentToken !== this.playToken || this.currentQueue.length === 0) {
         this.isCurrentlySpeaking = false;
@@ -262,7 +278,7 @@ class SpeechService {
             playNextChunk(false);
           } else {
             // หากระบบ Audio ทั้งสองทางใช้ไม่ได้ ให้สลับไปใช้ Web Speech API Fallback
-            this.fallbackSpeakText(cleanText, callbacks, options);
+            fallbackFrom(nextText);
           }
         };
 
@@ -275,25 +291,26 @@ class SpeechService {
               this.currentQueue.unshift(nextText);
               playNextChunk(false);
             } else {
-              this.fallbackSpeakText(cleanText, callbacks, options);
+              fallbackFrom(nextText);
             }
           });
         }
       } catch (e) {
         console.warn('[Speech] Exception in playNextChunk:', e);
-        this.fallbackSpeakText(cleanText, callbacks, options);
+        fallbackFrom(nextText);
       }
     };
 
     // เริ่มเล่นท่อนแรก
-    playNextChunk(true);
+    playNextChunk();
   }
 
   /**
    * ตัวเลือกสำรอง: ใช้ Web Speech API ในกรณีที่ไม่มีการเชื่อมต่อเครือข่าย
    */
-  private fallbackSpeakText(
-    text: string,
+  private fallbackSpeakChunks(
+    chunks: string[],
+    token: number,
     callbacks?: {
       onStart?: () => void;
       onEnd?: () => void;
@@ -301,43 +318,54 @@ class SpeechService {
     },
     options?: SpeakOptions
   ) {
-    if (!this.synth) {
+    const finish = (failed: boolean) => {
+      if (token !== this.playToken) return;
       this.isCurrentlySpeaking = false;
+      if (failed) callbacks?.onError?.();
       callbacks?.onEnd?.();
+    };
+
+    if (!this.synth) {
+      finish(true);
       return;
     }
 
-    try {
-      this.stopLocalSynth();
-      if (!this.thaiVoice) {
-        this.initLocalVoices();
-      }
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'th-TH';
-      utterance.rate = options?.rate ?? this.cuteRate;
-      utterance.pitch = options?.pitch ?? this.cutePitch;
-
-      if (this.thaiVoice) {
-        utterance.voice = this.thaiVoice;
-      }
-
-      utterance.onend = () => {
-        this.isCurrentlySpeaking = false;
-        callbacks?.onEnd?.();
-      };
-
-      utterance.onerror = () => {
-        this.isCurrentlySpeaking = false;
-        callbacks?.onError?.();
-        callbacks?.onEnd?.();
-      };
-
-      this.synth.speak(utterance);
-    } catch {
-      this.isCurrentlySpeaking = false;
-      callbacks?.onEnd?.();
+    this.stopLocalSynth();
+    if (!this.thaiVoice) {
+      this.initLocalVoices();
     }
+
+    // หากเครื่องไม่มีเสียงภาษาไทย เบราว์เซอร์จะใช้เสียงภาษาอังกฤษแทน ซึ่งจะข้ามตัวอักษรไทยทั้งหมด
+    // และอ่านเฉพาะตัวเลข/คำอังกฤษ จึงเลือกไม่อ่านเลยดีกว่าอ่านผิดภาษา
+    if (!this.thaiVoice) {
+      console.warn('[Speech] No Thai voice installed and cloud TTS unavailable; skipping speech.');
+      finish(true);
+      return;
+    }
+
+    // อ่านทีละท่อนสั้นๆ เพราะ Chrome มักตัดเสียงกลางคันเมื่อ utterance ยาวเกินไป
+    const queue = [...chunks];
+    const speakNext = () => {
+      if (token !== this.playToken) return;
+      const next = queue.shift();
+      if (!next) {
+        finish(false);
+        return;
+      }
+      try {
+        const utterance = new SpeechSynthesisUtterance(next);
+        utterance.lang = 'th-TH';
+        utterance.voice = this.thaiVoice;
+        utterance.rate = options?.rate ?? this.cuteRate;
+        utterance.pitch = options?.pitch ?? this.cutePitch;
+        utterance.onend = speakNext;
+        utterance.onerror = () => finish(true);
+        this.synth!.speak(utterance);
+      } catch {
+        finish(true);
+      }
+    };
+    speakNext();
   }
 
   /**
