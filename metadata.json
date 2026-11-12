@@ -1,0 +1,8 @@
+{
+  "name": "Remix ผจญภัยแดนสะเต็ม: ภารกิจกอบกู้เกาะ STEM",
+  "description": "เกมการศึกษาบูรณาการ STEM 2D สไตล์การ์ตูนชิบิน่ารัก สำหรับนักเรียนชั้น ป.4-ป.6 ผจญภัย 5 ด่าน พร้อมระบบคะแนน ดาว เกียรติบัตร และคำอธิบายเฉลยทุกข้อ",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

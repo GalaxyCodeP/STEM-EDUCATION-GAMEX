@@ -1,0 +1,333 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Mali', 'Itim', 'Sarabun', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Polka dot and pastel background pattern */
+.bg-polka-yellow {
+  background-color: #FFF8DC;
+  background-image: 
+    radial-gradient(#F6D860 18%, transparent 19%),
+    radial-gradient(#F6D860 18%, transparent 19%);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+}
+
+.bg-game-stage {
+  background-color: #FEF3C7;
+  background-image: url('/assets/images/game_background_1792396712320.jpg');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+}
+
+.bg-game-title {
+  background-color: #FFF9E6;
+  background-image: url('/assets/images/game_bg_with_characters_1792396758711.jpg');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+}
+
+@media (min-aspect-ratio: 16/9) {
+  .bg-game-title {
+    background-size: contain;
+  }
+}
+
+.bg-adventure-map {
+  background-color: #FEF3C7;
+  background-image: url('/assets/images/adventure_map_bg_1792398404782.jpg');
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.bg-stripes-subtle {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 235, 150, 0.25),
+    rgba(255, 235, 150, 0.25) 20px,
+    transparent 20px,
+    transparent 40px
+  );
+}
+
+/* Chibi 3D button press styles */
+.btn-chibi-primary {
+  transition: all 0.1s ease;
+  box-shadow: 0 6px 0 #B45309, 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+}
+.btn-chibi-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #B45309, 0 14px 20px -3px rgba(0, 0, 0, 0.2);
+}
+.btn-chibi-primary:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #B45309, 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-chibi-green {
+  transition: all 0.1s ease;
+  box-shadow: 0 6px 0 #15803D, 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+}
+.btn-chibi-green:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #15803D, 0 14px 20px -3px rgba(0, 0, 0, 0.2);
+}
+.btn-chibi-green:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #15803D, 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-chibi-blue {
+  transition: all 0.1s ease;
+  box-shadow: 0 6px 0 #1D4ED8, 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+}
+.btn-chibi-blue:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #1D4ED8, 0 14px 20px -3px rgba(0, 0, 0, 0.2);
+}
+.btn-chibi-blue:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #1D4ED8, 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-chibi-amber {
+  transition: all 0.1s ease;
+  box-shadow: 0 5px 0 #78350F, 0 8px 12px -2px rgba(0, 0, 0, 0.15);
+}
+.btn-chibi-amber:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 0 #78350F, 0 10px 14px -2px rgba(0, 0, 0, 0.2);
+}
+.btn-chibi-amber:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #78350F, 0 3px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal and card border style */
+.chibi-card {
+  border: 4px solid #78350F;
+  box-shadow: 0 8px 0 rgba(120, 53, 15, 0.25), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+}
+
+.chibi-card-gold {
+  border: 4px solid #D97706;
+  box-shadow: 0 8px 0 #92400E, 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+}
+
+/* Animations */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1.5deg);
+  }
+}
+
+@keyframes bounceSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.95));
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.animate-float {
+  animation: floatGentle 3s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: floatGentle 3.5s ease-in-out 1.5s infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounceSlow 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 0.4s ease-in-out infinite;
+}
+
+/* Confetti particles falling overlay */
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-40px) rotate(0deg) rotateX(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(105vh) rotate(720deg) rotateX(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes confettiFlutter {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  50% {
+    transform: translateX(28px) rotate(180deg);
+  }
+}
+
+/* MMORPG Cinematic Ken-Burns slow zoom */
+@keyframes kenburns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.08) translate(-1%, -1%);
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+
+.animate-kenburns {
+  animation: kenburns 14s ease-in-out infinite alternate;
+}
+
+/* 2D Runner Animations */
+@keyframes scrollBackground {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -1000px 0;
+  }
+}
+
+@keyframes characterRunBob {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(-2deg);
+  }
+}
+
+@keyframes characterJump {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  40% {
+    transform: translateY(-60px) rotate(-6deg) scale(1.05);
+  }
+  70% {
+    transform: translateY(-50px) rotate(3deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.animate-runner-scroll {
+  animation: scrollBackground 12s linear infinite;
+}
+
+.animate-runner-ground {
+  animation: scrollBackground 3.5s linear infinite;
+}
+
+.animate-runner-ground-fast {
+  animation: scrollBackground 1.2s linear infinite;
+}
+
+.animate-runner-char {
+  animation: characterRunBob 0.38s ease-in-out infinite;
+}
+
+.animate-jump {
+  animation: characterJump 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px) rotate(-0.8deg); }
+  40%, 80% { transform: translateX(6px) rotate(0.8deg); }
+}
+
+.animate-shake {
+  animation: screenShake 0.4s ease-in-out;
+}
+
+@keyframes slashFlash {
+  0% { transform: scale(0.6) rotate(-25deg); opacity: 0; }
+  50% { transform: scale(1.3) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1.8) rotate(25deg); opacity: 0; }
+}
+
+.animate-slash-flash {
+  animation: slashFlash 0.5s ease-out forwards;
+}
+
+@keyframes speedWind {
+  0% { transform: translateX(120%); opacity: 0; }
+  40% { opacity: 0.8; }
+  100% { transform: translateX(-120%); opacity: 0; }
+}
+
+.animate-speed-wind {
+  animation: speedWind 0.8s linear infinite;
+}
+
+
+/* Print Certificate CSS */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #certificate-print-area, #certificate-print-area * {
+    visibility: visible;
+  }
+  #certificate-print-area {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 24px;
+    background: white !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
